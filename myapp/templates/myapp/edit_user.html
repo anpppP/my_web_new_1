@@ -20,10 +20,16 @@
             <input type="text" id="user_id" name="user_id" value="{{ user_code }}" readonly>
         </div>
 
-        <!-- ชื่อผู้ใช้ -->
         <div class="form-group">
-            <label for="username">ชื่อผู้ใช้</label>
-            <input type="text" id="username" name="username" value="{{ user_obj.username }}" required>
+            <label>ชื่อ</label>
+            <input type="text" name="first_name" class="form-control"
+                value="{% if employee %}{{ employee.first_name }}{% else %}{{ user_obj.first_name }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label>นามสกุล</label>
+            <input type="text" name="last_name" class="form-control"
+                value="{% if employee %}{{ employee.last_name }}{% else %}{{ user_obj.last_name }}{% endif %}">
         </div>
 
         <!-- ตำแหน่ง -->
@@ -64,31 +70,10 @@
 <!-- ================= SCRIPT SECTION ================= -->
 <script>
 const form = document.getElementById('editUserForm');
-const usernameInput = document.getElementById('username');
 
-form.addEventListener('submit', async function (e) {
+form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    const username = usernameInput.value.trim();
-    if (!username) return;
-
-    // ✅ ตรวจสอบชื่อซ้ำแบบเรียลไทม์
-    const res = await fetch(`?username=${encodeURIComponent(username)}`, {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    });
-    const data = await res.json();
-
-    if (data.exists) {
-        Swal.fire({
-            icon: 'error',
-            title: 'ชื่อผู้ใช้ซ้ำ!',
-            text: `ชื่อ "${username}" ถูกใช้ในระบบแล้ว ❌`,
-            confirmButtonColor: '#d33',
-        });
-        return;
-    }
-
-    // ✅ ยืนยันก่อนบันทึก
     Swal.fire({
         title: 'คุณแน่ใจหรือไม่?',
         text: "ต้องการบันทึกการแก้ไขข้อมูลผู้ใช้นี้หรือไม่",
@@ -109,14 +94,14 @@ form.addEventListener('submit', async function (e) {
 <!-- ✅ แสดง SweetAlert2 สำหรับข้อความจาก Django -->
 {% if messages %}
 <script>
-  {% for message in messages %}
+    {% for message in messages %}
     Swal.fire({
-      icon: '{% if "success" in message.tags %}success{% elif "error" in message.tags %}error{% else %}info{% endif %}',
-      title: '{{ message|escapejs }}',
-      showConfirmButton: false,
-      timer: 2000
+        icon: '{% if "success" in message.tags %}success{% elif "error" in message.tags %}error{% else %}info{% endif %}',
+        title: '{{ message|escapejs }}',
+        showConfirmButton: false,
+        timer: 2000
     });
-  {% endfor %}
+    {% endfor %}
 </script>
 {% endif %}
 {% endblock %}

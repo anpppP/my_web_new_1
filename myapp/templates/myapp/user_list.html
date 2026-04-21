@@ -34,11 +34,14 @@
         <td>{{ user.name }}</td>
         <td class="text-center">{{ user.position }}</td>
         <td class="text-center">
-          <a href="{{ user.edit_url }}" class="btn btn-sm btn-warning">✏️</a>
-          <a href="{{ user.delete_url }}"
-             class="btn btn-sm btn-danger"
-             onclick="confirmDelete(event, '{{ user.delete_url }}', '{{ user.name }}')">🗑️</a>
-        </td>
+  <a href="{{ user.edit_url }}" class="btn btn-sm btn-warning">✏️</a>
+
+  {% if user.position != "แอดมิน" and user.position != "เจ้าของกิจการ" %}
+    <a href="{{ user.delete_url }}"
+       class="btn btn-sm btn-danger"
+       onclick="confirmDelete(event, '{{ user.delete_url }}', '{{ user.name }}')">🗑️</a>
+  {% endif %}
+</td>
       </tr>
       {% endfor %}
     </tbody>

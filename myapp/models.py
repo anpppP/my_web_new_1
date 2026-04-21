@@ -128,6 +128,11 @@ def backup_customer_000(sender, instance, **kwargs):
 # ข้อมูลพนักงาน
 # -------------------------
 class Employee(models.Model):
+    POSITION_CHOICES = [
+        ("employee", "พนักงาน"),
+        ("owner", "เจ้าของ"),
+    ]
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -136,9 +141,16 @@ class Employee(models.Model):
     )
     phone = models.CharField("เบอร์โทร", max_length=20, blank=True, null=True)
     address = models.TextField("ที่อยู่", blank=True, null=True)
+    position = models.CharField(
+        max_length=20,
+        choices=POSITION_CHOICES,
+        default="employee"
+    )
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return f"Employee: {self.user.username} ({self.user.first_name} {self.user.last_name})"
+        return f"{self.user.username} - {self.user.first_name} {self.user.last_name}"
 
     class Meta:
         verbose_name = "พนักงาน"
@@ -249,6 +261,17 @@ class Sale(models.Model):
         (3, "รอการจัดส่ง"),
         (4, "จัดส่งเสร็จสิ้น"),
     ]
+    # 🔥 เพิ่มบนสุดใน class Sale
+    CHANNEL_CHOICES = [
+        ("storefront", "หน้าร้าน"),
+        ("online", " онл์ไลน์"),
+    ]
+
+    channel = models.CharField(
+        max_length=20,
+        choices=CHANNEL_CHOICES,
+        default="storefront"
+    )
 
     sale_code = models.CharField("รหัสการขาย", max_length=20, unique=True, blank=True)
     sale_date = models.DateField("วันที่ขาย", default=timezone.now)
@@ -323,6 +346,8 @@ class Sale(models.Model):
                 new_number = 1
             self.sale_code = f"{prefix}-{new_number:03d}"
         super().save(*args, **kwargs)
+        
+        
 
 
 class SaleItem(models.Model):
@@ -529,4 +554,6 @@ class CartItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     def subtotal(self):
-        return self.product.price * self.quantity
+        return self.product.price * self.quantity 
+    
+    
