@@ -35,11 +35,16 @@
         <!-- ตำแหน่ง -->
         <div class="form-group">
             <label for="position">ตำแหน่ง</label>
-            <select id="position" name="position" class="form-control">
+
+            <select id="position" name="position" class="form-control" disabled>
                 {% for value,label in position_choices %}
-                <option value="{{ value }}" {% if profile.position == value %}selected{% endif %}>{{ label }}</option>
+                <option value="{{ value }}" {% if profile.position == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
                 {% endfor %}
             </select>
+
+            <input type="hidden" name="position" value="{{ profile.position }}">
         </div>
 
         <!-- ที่อยู่ -->
@@ -69,26 +74,26 @@
 
 <!-- ================= SCRIPT SECTION ================= -->
 <script>
-const form = document.getElementById('editUserForm');
+    const form = document.getElementById('editUserForm');
 
-form.addEventListener('submit', function (e) {
-    e.preventDefault();
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-    Swal.fire({
-        title: 'คุณแน่ใจหรือไม่?',
-        text: "ต้องการบันทึกการแก้ไขข้อมูลผู้ใช้นี้หรือไม่",
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'บันทึกเลย!',
-        cancelButtonText: 'ยกเลิก'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            form.submit();
-        }
+        Swal.fire({
+            title: 'คุณแน่ใจหรือไม่?',
+            text: "ต้องการบันทึกการแก้ไขข้อมูลผู้ใช้นี้หรือไม่",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'บันทึกเลย!',
+            cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
     });
-});
 </script>
 
 <!-- ✅ แสดง SweetAlert2 สำหรับข้อความจาก Django -->

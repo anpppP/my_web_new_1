@@ -1,4 +1,6 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
+{% block content %}
+
 <style>
   .container {
     background-color: #fff;
@@ -10,11 +12,11 @@
     font-size: 1.1rem;
   }
 
-  h1 {
+  h2 {
     margin-bottom: 25px;
     color: #2f4f4f;
     font-weight: bold;
-    font-size: 2rem;
+    text-align: center;
   }
 
   form p {
@@ -66,58 +68,51 @@
 </style>
 
 <div class="container">
-  <h2 class="text-center">
+  <h2>
     {% if form.instance.pk %}
-    📦 ข้อมูลร้านค้า
+      📦 ข้อมูลร้านค้า
     {% else %}
-    ➕ เพิ่มร้านค้า
+      ➕ เพิ่มร้านค้า
     {% endif %}
   </h2>
 
   <form id="storeForm" method="post">
     {% csrf_token %}
 
+    <!-- 🏪 ข้อมูลร้าน -->
     <p>{{ form.name.label_tag }} {{ form.name }}</p>
-
     <p>{{ form.address.label_tag }} {{ form.address }}</p>
-
     <p>{{ form.number.label_tag }} {{ form.number }}</p>
 
-    <!-- ✅ หัวข้อบัญชีธนาคาร -->
-    <p>
-      <b>บัญชีธนาคาร:</b>
-    </p>
+    <!-- 💳 บัญชีธนาคาร -->
+    <p><b>บัญชีธนาคาร:</b></p>
     <div style="margin-left: 20px">
       <p>{{ form.bank_name.label_tag }} {{ form.bank_name }}</p>
       <p>{{ form.bank_number.label_tag }} {{ form.bank_number }}</p>
       <p>{{ form.bank_owner.label_tag }} {{ form.bank_owner }}</p>
     </div>
 
+    <!-- 👤 ลูกค้าทั่วไป -->
     <p>
       {{ form.general_customer.label_tag }}
       {{ form.general_customer }}
     </p>
 
-    <!-- 🔸 รหัสเดิม -->
-    <p style="margin-top: -10px;">
-      <small style="color: #888;">
-        รหัสเดิม (สำหรับตรวจสอบ)
-      </small>
-      <input type="text" class="form-control" value="{{ form.instance.general_customer }}" readonly
-        style="background-color: #f5f5f5;">
-    </p>
+    <!-- 🔒 ซ่อนรหัสเดิม (ยังส่งค่าอยู่) -->
+    <input type="hidden" name="original_general_customer"
+           value="{{ form.instance.general_customer }}">
 
-    <!-- ส่งค่าเดิมไป backend -->
-    <input type="hidden" name="original_general_customer" value="{{ form.instance.general_customer }}">
-
+    <!-- 🔘 ปุ่ม -->
     <button type="submit" class="btn btn-success">💾 บันทึก</button>
-    <button type="button" id="cancelBtn" class="btn btn-secondary" style="display: none" onclick="cancelForm()">❌
-      ยกเลิก</button>
+    <button type="button" id="cancelBtn" class="btn btn-secondary" style="display:none">
+      ❌ ยกเลิก
+    </button>
   </form>
 </div>
 
 <!-- ✅ SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 {% if messages %}
 <script>
   {% for message in messages %}
@@ -135,29 +130,31 @@
   const cancelBtn = document.getElementById("cancelBtn");
   let formChanged = false;
 
-  // เมื่อพิมพ์หรือแก้ไข input ใด ๆ ใน form
+  // detect change
   form.querySelectorAll("input, textarea, select").forEach((el) => {
     el.addEventListener("input", () => {
       formChanged = true;
-      cancelBtn.style.display = "inline-block"; // ✅ แสดงปุ่ม
+      cancelBtn.style.display = "inline-block";
     });
   });
 
-  function cancelForm() {
+  // cancel
+  cancelBtn.addEventListener("click", () => {
     Swal.fire({
       title: "ยกเลิกการแก้ไข?",
-      text: "ข้อมูลที่คุณพิมพ์จะถูกลบและกลับเป็นค่าเดิม",
+      text: "ข้อมูลจะกลับเป็นค่าเดิม",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "ใช่, ยกเลิกเลย",
-      cancelButtonText: "ไม่, ทำต่อ",
+      confirmButtonText: "ใช่",
+      cancelButtonText: "ไม่"
     }).then((result) => {
       if (result.isConfirmed) {
         form.reset();
-        cancelBtn.style.display = "none"; // ✅ ซ่อนปุ่มกลับ
+        cancelBtn.style.display = "none";
         formChanged = false;
       }
     });
-  }
+  });
 </script>
+
 {% endblock %}

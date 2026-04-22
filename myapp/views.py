@@ -1704,7 +1704,9 @@ def shipping_rate_delete(request, pk):
 
 def checkout_view(request):
 
-    # 🔥 ใช้ cart_key ให้ตรงกับระบบ
+    print("🔥 ENTER VIEW")
+
+    # ===== cart key =====
     if request.user.is_authenticated:
         cart_key = f"cart_user_{request.user.id}"
     elif request.session.get("customer_id"):
@@ -1713,8 +1715,10 @@ def checkout_view(request):
         cart_key = "cart_guest"
 
     cart = request.session.get(cart_key, {})
+    print("🛒 CART:", cart)
 
     if not cart:
+        print("❌ CART EMPTY")
         return redirect("myapp:cart")
 
     items = []
@@ -1743,36 +1747,34 @@ def checkout_view(request):
     shipping_fee = 25 if total_weight <= 1 else 350
     grand_total = total + shipping_fee
 
+    # ===== POST =====
     if request.method == "POST":
+        print("🔥 POST HIT")
 
         customer = None
 
-        # ลูกค้าปกติ
         customer_id = request.session.get("customer_id")
         if customer_id:
             customer = Customer.objects.filter(customer_id=customer_id).first()
 
-        # admin / employee
         if not customer and request.user.is_authenticated:
             customer = Customer.objects.filter(customer_id="000").first()
 
         if not customer:
-            messages.error(request, "กรุณาเข้าสู่ระบบก่อนสั่งซื้อ")
+            print("❌ NO CUSTOMER")
             return redirect("myapp:login")
-
-        name = request.POST.get("name")
-        phone = request.POST.get("phone")
-        address = request.POST.get("address")
 
         slip = request.FILES.get("slip_image")
 
         sale = Sale.objects.create(
             customer=customer,
             shipping_fee=shipping_fee,
-            status=1
+            status=1,
+            channel="online"
         )
 
-        # บันทึกสินค้า
+        print("🔥 SALE CREATED:", sale.id)
+
         for item in items:
             SaleItem.objects.create(
                 sale=sale,
@@ -1781,7 +1783,6 @@ def checkout_view(request):
                 quantity=item["qty"]
             )
 
-        # บันทึก payment
         Payment.objects.create(
             sale=sale,
             pay_total=grand_total,
@@ -1789,7 +1790,6 @@ def checkout_view(request):
             slip_image=slip
         )
 
-        # 🔥🔥🔥 จุดสำคัญ: ล้าง cart ให้ถูก key
         request.session[cart_key] = {}
         request.session.modified = True
 

@@ -18,7 +18,7 @@
   <table class="user-table">
     <thead>
       <tr>
-        <th>น้ำหนัก (กก.)</th>
+        <th>น้ำหนักไม่เกิน (กก.)</th>
         <th>อัตราค่าขนส่ง (บาท)</th>
         <th>การจัดการ</th>
       </tr>
@@ -43,6 +43,14 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+
+<div style="margin-top: 20px; padding: 12px; background: #f8f9fa; border-radius: 8px; font-size: 14px;">
+  <strong>📌 หมายเหตุ:</strong>
+  <ul style="margin-top: 5px;">
+    <li>คำนวณค่าขนส่งตามน้ำหนักรวมของสินค้า</li>
+    <li>หากน้ำหนักเกินช่วงที่กำหนด จะใช้อัตราสูงสุด เช่น</li>
+  </ul>
 </div>
 
 <!-- ✅ ฟังก์ชัน SweetAlert2 -->

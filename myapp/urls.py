@@ -119,7 +119,7 @@ path('update-sale-status/<int:pk>/', views.update_sale_status, name='update_sale
     path("shipping/<int:pk>/delete/", views.shipping_rate_delete, name="shipping_rate_delete"),
 
     # ====== Checkout ======
-    path("checkout/", views.checkout_view, name="checkout"),
+    path("checkout/", views.checkout, name="checkout"),
     path('report/sales/', views.report_sales, name='report_sales'),
     
     
